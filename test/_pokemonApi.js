@@ -18,13 +18,13 @@ describe("Pokemon API Server", () => {
   });
 
   describe("GET /api/pokemon", () => {
-    it("should return the list of pokemon", async () => {
+    it("should return the list of all the pokemon", async () => {
       const res = await request.get("/api/pokemon");
       res.should.be.json;
       JSON.parse(res.text).should.deep.equal(pokeData.pokemon);
     });
     it("should return a limited list of pokemon", async () => {
-      const res = await request.get("/api/pokemon/10");
+      const res = await request.get("/api/pokemon").query({ limit: "10" });
       res.should.be.json;
       JSON.parse(res.text).should.deep.equal(pokeData.pokemon.slice(0, 10));
     });
@@ -98,6 +98,32 @@ describe("Pokemon API Server", () => {
       const res = await request.post("/api/pokemon").send(newPokemon);
       res.should.be.json;
       JSON.parse(res.text).should.deep.equal(pokeData.pokemon[151]);
+    });
+  });
+  describe("GET /api/pokemon/:idOrName", () => {
+    it("should return pokemon with the corresponding id", async () => {
+      const res = await request.get("/api/pokemon/98");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.pokemon[97]);
+    });
+    it("should return pokemon with the corresponding id", async () => {
+      const res = await request.get("/api/pokemon/098");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.pokemon[97]);
+    });
+    it("should return pokemon with the corresponding name", async () => {
+      const res = await request.get("/api/pokemon/Butterfree");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.pokemon[11]);
+    });
+  });
+  describe("PATCH /api/pokemon/:idOrName", () => {
+    it("should be able to modify the pokemon with the corresponding id", async () => {
+      const res = await request
+        .patch("/api/pokemon/Butterfree")
+        .query({ name: "ButterTakai" });
+      res.should.be.json;
+      JSON.parse(res.text).name.should.deep.equal("ButterTakai");
     });
   });
 });

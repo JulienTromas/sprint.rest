@@ -21,26 +21,42 @@ const setupServer = () => {
     res.send(newPokemon);
   });
 
-  server.get("/api/pokemon/:id", (req, res) => {
-    const pokemonId = req.params.id;
-    res.send(pokeData.pokemon[Number(pokemonId - 1)]);
+  server.get("/api/pokemon/:idOrName", (req, res) => {
+    if (Number(req.params.idOrName)) {
+      const pokemonId = req.params.idOrName;
+      res.send(pokeData.pokemon[Number(pokemonId - 1)]);
+    } else {
+      const pokemonName = req.params.idOrName;
+      const output = pokeData.pokemon.filter(
+        (pokemon) => pokemon.name === pokemonName
+      )[0];
+      res.send(output);
+    }
   });
 
-  server.get("/api/pokemon/:name", (req, res) => {
-    const pokemonName = req.params.name;
+  server.patch("/api/pokemon/:idOrName", (req, res) => {
+    const { name } = req.query;
+    if (Number(req.params.idOrName)) {
+      const pokemonId = req.params.idOrName;
+      pokeData.pokemon[Number(pokemonId - 1)].name = name;
+      res.send(pokeData.pokemon[Number(pokemonId - 1)].name);
+    }
+    const pokemonName = req.params.idOrName;
     const output = pokeData.pokemon.filter(
       (pokemon) => pokemon.name === pokemonName
     )[0];
+    output.name = name;
     res.send(output);
   });
 
-  server.patch("/api/pokemon/name/:idOrname", (req, res) => {
-    const pokemonName = req.params.name;
-    const output = pokeData.pokemon.filter(
-      (pokemon) => pokemon.name === pokemonName
-    )[0];
-    res.send(output);
-  });
+  /*
+
+  DELETE : get and ID or a NAME of a pokemon, find it in the array with its id,
+  then remove it from the array with splice
+
+
+
+  */
   return server;
 };
 
