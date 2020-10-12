@@ -1,6 +1,8 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 chai.use(chaiHttp);
+chai.should();
+const pokeData = require("../src/data");
 const { setupServer } = require("../src/server");
 
 /*
@@ -13,5 +15,18 @@ describe("Pokemon API Server", () => {
   let request;
   beforeEach(() => {
     request = chai.request(server);
+  });
+
+  describe("GET /api/pokemon", () => {
+    it("should return the list of pokemon", async () => {
+      const res = await request.get("/api/pokemon");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.pokemon);
+    });
+    it("should return a limited list of pokemon", async () => {
+      const res = await request.get("/api/pokemon/10");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.pokemon.slice(0, 10));
+    });
   });
 });
