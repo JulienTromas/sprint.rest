@@ -29,4 +29,75 @@ describe("Pokemon API Server", () => {
       JSON.parse(res.text).should.deep.equal(pokeData.pokemon.slice(0, 10));
     });
   });
+  describe("POST /api/pokemon", () => {
+    it("should add a pokemon", async () => {
+      const newPokemon = {
+        id: "152",
+        name: "VicDustin",
+        classification: "Coding Pokémon",
+        types: ["Pizza", "Javascript"],
+        resistant: ["Water", "Electric", "Grass", "Fighting", "Fairy"],
+        weaknesses: ["Fire", "Ice", "Flying", "Psychic"],
+        weight: {
+          minimum: "6.04kg",
+          maximum: "7.76kg",
+        },
+        height: {
+          minimum: "0.61m",
+          maximum: "0.79m",
+        },
+        fleeRate: 0.1,
+        evolutionRequirements: {
+          amount: 25,
+          name: "Pizza slices",
+        },
+        evolutions: [
+          {
+            id: 2,
+            name: "DustinVic",
+          },
+          {
+            id: 3,
+            name: "VustinDic",
+          },
+        ],
+        maxCP: 951,
+        maxHP: 1071,
+        attacks: {
+          fast: [
+            {
+              name: "Tackle",
+              type: "Normal",
+              damage: 12,
+            },
+            {
+              name: "Vine Whip",
+              type: "Grass",
+              damage: 7,
+            },
+          ],
+          special: [
+            {
+              name: "Power Whip",
+              type: "Grass",
+              damage: 70,
+            },
+            {
+              name: "Seed Bomb",
+              type: "Grass",
+              damage: 40,
+            },
+            {
+              name: "Sludge Bomb",
+              type: "Poison",
+              damage: 55,
+            },
+          ],
+        },
+      };
+      const res = await request.post("/api/pokemon").send(newPokemon);
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.pokemon[151]);
+    });
+  });
 });

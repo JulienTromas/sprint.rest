@@ -16,8 +16,13 @@ const setupServer = () => {
     for (let i = 0; i < Number(pokemonLimit); i++) {
       output.push(pokeData.pokemon[i]);
     }
-    console.log(output);
     res.send(output);
+  });
+
+  server.post("/api/pokemon", (req, res) => {
+    const newPokemon = req.body;
+    pokeData.pokemon.push(newPokemon);
+    res.send(newPokemon);
   });
   return server;
 };
