@@ -241,6 +241,7 @@ describe("Pokemon API Server", () => {
       const res = await request.delete("/api/types/Electric");
       res.should.be.html;
       res.text.should.deep.equal(removedType);
+      pokeData.types[7].should.deep.equal("Ground");
     });
   });
   describe("GET /api/types/:type/pokemon", () => {
@@ -318,6 +319,74 @@ describe("Pokemon API Server", () => {
       const res = await request.get("/api/attacks/Hydro Pump");
       res.should.be.json;
       JSON.parse(res.text).should.deep.equal(pokeData.attacks.special[15]);
+    });
+  });
+  describe("GET /api/attacks/:name/pokemon", () => {
+    it("should return the list of all the pokemon with the requested attack", async () => {
+      const HydroPumpPokemon = [
+        { id: "008", name: "Wartortle" },
+        { id: "009", name: "Blastoise" },
+        { id: "055", name: "Golduck" },
+        { id: "062", name: "Poliwrath" },
+        { id: "073", name: "Tentacruel" },
+        { id: "091", name: "Cloyster" },
+        { id: "121", name: "Starmie" },
+        { id: "130", name: "Gyarados" },
+        { id: "134", name: "Vaporeon" },
+        { id: "139", name: "Omastar" },
+      ];
+      const res = await request.get("/api/attacks/Hydro Pump/pokemon");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(HydroPumpPokemon);
+    });
+  });
+  describe("POST /api/attacks/fast", () => {
+    it("should add a pokemon attack in the fast category", async () => {
+      const newAttack = {
+        name: "Hydro Code",
+        type: "Water Coding",
+        damage: 1000000000,
+      };
+      const res = await request.post("/api/attacks/fast").send(newAttack);
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(newAttack);
+    });
+  });
+  describe("POST /api/attacks/special", () => {
+    it("should add a pokemon attack in the special category", async () => {
+      const newAttack = {
+        name: "Special Attack",
+        type: "Very very special",
+        damage: 1,
+      };
+      const res = await request.post("/api/attacks/special").send(newAttack);
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(newAttack);
+    });
+  });
+  describe("PATCH /api/attacks/:name", () => {
+    it("should be able to modify the attack with the corresponding name", async () => {
+      const res = await request.patch("/api/attacks/Tackle").query({
+        name: "Sandwich",
+        type: "Burger",
+        damage: 3,
+      });
+      res.should.be.json;
+      JSON.parse(res.text).name.should.deep.equal("Sandwich");
+      JSON.parse(res.text).type.should.deep.equal("Burger");
+      JSON.parse(res.text).damage.should.deep.equal(3);
+    });
+  });
+  describe("DELETE /api/attacks/:name", () => {
+    it("should be able to delete the attack with the corresponding name", async () => {
+      const removedAttack = {
+        name: "Ember",
+        type: "Fire",
+        damage: 10,
+      };
+      const res = await request.delete("/api/attacks/Ember");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(removedAttack);
     });
   });
 });

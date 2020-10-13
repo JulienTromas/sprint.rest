@@ -28,7 +28,7 @@ const setupServer = () => {
   server.post("/api/pokemon", (req, res) => {
     const newPokemon = req.body;
     pokeData.pokemon.push(newPokemon);
-    res.send(newPokemon);
+    res.send(pokeData.pokemon[pokeData.pokemon.length - 1]);
   });
 
   server.get("/api/pokemon/:idOrName", (req, res) => {
@@ -121,7 +121,7 @@ const setupServer = () => {
   server.post("/api/types", (req, res) => {
     const newType = req.body;
     pokeData.types.push(newType);
-    res.send(newType);
+    res.send(pokeData.types[pokeData.types.length - 1]);
   });
 
   server.delete("/api/types/:name", (req, res) => {
@@ -186,6 +186,56 @@ const setupServer = () => {
       }
     }
     res.send(output);
+  });
+
+  server.get("/api/attacks/:name/pokemon", (req, res) => {
+    const attackName = req.params.name;
+    const pokemonList = [];
+    pokeData.pokemon.forEach((pokemon) => {
+      for (const key in pokemon.attacks) {
+        for (let i = 0; i < pokemon.attacks[key].length - 1; i++) {
+          if (pokemon.attacks[key][i].name === attackName) {
+            pokemonList.push(objectSlicer(pokemon, 2));
+          }
+        }
+      }
+    });
+    res.send(pokemonList);
+  });
+  server.post("/api/attacks/fast", (req, res) => {
+    const newAttack = req.body;
+    pokeData.attacks.fast.push(newAttack);
+    res.send(pokeData.attacks.fast[pokeData.attacks.fast.length - 1]);
+  });
+  server.post("/api/attacks/special", (req, res) => {
+    const newAttack = req.body;
+    pokeData.attacks.special.push(newAttack);
+    res.send(pokeData.attacks.special[pokeData.attacks.special.length - 1]);
+  });
+  server.patch("/api/attacks/:name", (req, res) => {
+    let { name, type, damage } = req.query;
+    damage = Number(damage);
+    const attackName = req.params.name;
+    for (const key in pokeData.attacks) {
+      for (let i = 0; i < pokeData.attacks[key].length - 1; i++) {
+        if (pokeData.attacks[key][i].name === attackName) {
+          pokeData.attacks[key][i] = { name, type, damage };
+        }
+      }
+    }
+    res.send(pokeData.attacks.fast[0]);
+  });
+  server.delete("/api/attacks/:name", (req, res) => {
+    const attackName = req.params.name;
+    let removedAttack;
+    for (const key in pokeData.attacks) {
+      for (let i = 0; i < pokeData.attacks[key].length - 1; i++) {
+        if (pokeData.attacks[key][i].name === attackName) {
+          removedAttack = pokeData.attacks[key].splice(i, 1);
+        }
+      }
+    }
+    res.send(removedAttack[0]);
   });
 
   return server;
