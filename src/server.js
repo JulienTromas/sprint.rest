@@ -148,12 +148,55 @@ const setupServer = () => {
   server.get("/api/attacks", (req, res) => {
     if (!req.query.limit) res.send(pokeData.attacks);
     const { limit } = req.query;
+    let output = [];
+    output = Object.values(
+      objectSlicer(pokeData.attacks, limit)
+    ).reduce((a, b) => a.concat(b));
+    res.send(output);
+  });
+
+  server.get("/api/attacks/fast", (req, res) => {
+    if (!req.query.limit) res.send(pokeData.attacks.fast);
+    const { limit } = req.query;
     const output = [];
-    output.push(pokeData.attacks);
+    for (let i = 0; i < Number(limit); i++) {
+      output.push(pokeData.attacks.fast[i]);
+    }
+    res.send(output);
+  });
+  server.get("/api/attacks/special", (req, res) => {
+    if (!req.query.limit) res.send(pokeData.attacks.special);
+    const { limit } = req.query;
+    const output = [];
+    for (let i = 0; i < Number(limit); i++) {
+      output.push(pokeData.attacks.special[i]);
+    }
+    res.send(output);
+  });
+
+  server.get("/api/attacks/:name", (req, res) => {
+    const attackName = req.params.name;
+    let output;
+
+    for (const key in pokeData.attacks) {
+      for (let i = 0; i < pokeData.attacks[key].length - 1; i++) {
+        if (pokeData.attacks[key][i].name === attackName) {
+          output = pokeData.attacks[key][i];
+        }
+      }
+    }
     res.send(output);
   });
 
   return server;
 };
+/*
+ATTACK OBJECT
+       FAST OBJECT : ARRAY OF ATTACK OBJECTS
+       SPECIAL OBJECT : ARRAY OF ATTACK OBJECTS
 
+HYDRO PUMP ===> ATTACK / SPECIAL / OBJECT HYDRO PUMP
+GO INSIDE ATTACK OBJECT, GO INTO FIRST OBJECT, GO INTO ARRAY OF ATTACKS, CHECK EACH ATTACK OBJECT NAME
+
+*/
 module.exports = { setupServer };

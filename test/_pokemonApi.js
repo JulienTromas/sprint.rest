@@ -270,10 +270,54 @@ describe("Pokemon API Server", () => {
       res.should.be.json;
       JSON.parse(res.text).should.deep.equal(pokeData.attacks);
     });
-    it("should return a limited list of pokemon attacks", async () => {
+    it("should return a limited list of pokemon attacks if we limit it to 2", async () => {
+      const res = await request.get("/api/attacks").query({ limit: "2" });
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(
+        pokeData.attacks.fast.concat(pokeData.attacks.special)
+      );
+    });
+    it("should return a limited list of pokemon attacks if we limit it to 1", async () => {
       const res = await request.get("/api/attacks").query({ limit: "1" });
       res.should.be.json;
       JSON.parse(res.text).should.deep.equal(pokeData.attacks.fast);
+    });
+  });
+  describe("GET /api/attacks/fast", () => {
+    it("should return the list of all the fast attacks", async () => {
+      const res = await request.get("/api/attacks/fast");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.attacks.fast);
+    });
+    it("should return a limited list of fast attacks", async () => {
+      const res = await request.get("/api/attacks/fast").query({ limit: "10" });
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(
+        pokeData.attacks.fast.slice(0, 10)
+      );
+    });
+  });
+  describe("GET /api/attacks/special", () => {
+    it("should return the list of all the special attacks", async () => {
+      const res = await request.get("/api/attacks/special");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.attacks.special);
+    });
+    it("should return a limited list of special attacks", async () => {
+      const res = await request
+        .get("/api/attacks/special")
+        .query({ limit: "10" });
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(
+        pokeData.attacks.special.slice(0, 10)
+      );
+    });
+  });
+  describe("GET /api/attacks/:name", () => {
+    it("should return the attack we ask for", async () => {
+      const res = await request.get("/api/attacks/Hydro Pump");
+      res.should.be.json;
+      JSON.parse(res.text).should.deep.equal(pokeData.attacks.special[15]);
     });
   });
 });
