@@ -1,6 +1,5 @@
 const pokeData = require("./data");
 const express = require("express");
-const { pokemon } = require("./data");
 
 const setupServer = () => {
   function objectSlicer(object, lastKey) {
